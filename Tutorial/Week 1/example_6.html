@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 6 - Javascript</title>
+</head>
+
+<body>
+
+</body>
+
+<script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+<script type="text/javascript">
+    var dataset;
+
+    d3.csv("input.csv").then(
+        function (data) {
+            // the variable data is available only inside this function
+            // so copy its value into global variable dataset
+            dataset = data;
+            generateVisualization();
+        }
+    );
+
+    function generateVisualization() {
+        d3.select("body")
+            // get all p elements in the body , if none exist create a virtual array
+            .selectAll("p")
+            // join data with the virtual array
+            .data(dataset)
+            // enter the dataset
+            .enter()
+            // following code is repeated for each element in the dataset like a loop
+            .append("p")
+            .text(
+                function (d) {
+                    return "Team: " + d.team + ", Score: " + d.score
+                }
+            );
+    }
+</script>
+
+</html>

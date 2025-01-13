@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Example 5 - Javascript</title>
+  </head>
+
+  <body>
+    <h3> Press F12 to open Developer Tools</h3>
+  </body>
+
+  <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+  <script type="text/javascript">
+
+      // Method Chaining
+      d3.select('body').append("p").text("Bears, Beets, Battlestar Galactica");
+
+      // Storing each dom element in a variable and then using it  
+      var bodyVariable = d3.select('body');
+      var newParagraph = bodyVariable.append('p');
+      newParagraph.text("DOM - Document Object Model");  
+      
+  </script>
+
+</html>
