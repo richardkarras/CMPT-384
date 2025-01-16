@@ -17,6 +17,7 @@
     d3.csv("input.csv").then(function (data) {
         dataset = data;
         generateVisualization();
+        generateVertical();
     });
 
     function generateVisualization() {
@@ -43,7 +44,30 @@
                 return d.score;
             });
     }
-
+    function generateVertical() {
+        // Store SVG width and Height in variables
+        var width = '500',
+            height = '300';
+        // Create SVG and add to body 
+        var svg = d3.select('body')
+            .append('svg')
+            .attr('width', width).attr('height', height);
+        // Attach data to virtual array of circles
+        var circles = svg.selectAll('circle')
+            .data(dataset)
+            .enter()
+            .append('circle')
+            // set circle X position
+            .attr("cx", 150)
+            // set circle Y postion
+            .attr("cy", function (d, i) {
+                return 50 + (i * 100);
+            })
+            // set radius of Circle
+            .attr("r", function (d) {
+                return d.score;
+            });
+    }
     // Change the code so the circles are vertical instead of horizontal and center them along X axis
     
 </script>

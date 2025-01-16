@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js">            
+        </script>
+    </head>
+
+    <body>
+        Assignment 1
+        <div class="v0">
+            <p>Example</p>
+            <script>                
+                var canvas1 = d3.selectAll('div.v0') //I selected div v0
+                .append("svg") //I created a space for scalable vector graphics
+                .attr("width",600)
+                .attr("height",50);
+                console.log(canvas1); //this is just like print 
+
+                canvas1.selectAll('circle')
+                .data([100,200,300]) 
+                .join('circle') //now I have three circles for each data  elem but they do not have attr
+                .attr('r',10) //here I assign the same radii for all three circles
+                .attr('cx', function(d,i){return d+i*20;} ) //translate the center for each circle [100+0*20, 200+1*20, 300+2*20]
+                .attr('cy', 20);
+            </script>
+        </div>
+		
+        <div class="v1">
+            <p>Q1 solution</p>
+            <script>
+                var canvas2 = d3.selectAll('div.v1') //I selected div v1
+                .append("svg") //I created a space for scalable vector graphics
+                .attr("width",600)
+                .attr("height",200)
+				console.log(canvas2); //this is just like print 
+				
+                //BEGIN:CODE FOR A1
+				//WRITE YOUR CODE
+				
+				//END:CODE FOR A1				
+            </script>
+        </div>
+		
+        <div class="v2">
+            <p>Q2 solution</p>
+            <script>
+                var canvas2 = d3.selectAll('div.v2') //I selected div v2
+                .append("svg") //I created a space for scalable vector graphics
+                .attr("width",600)
+                .attr("height",200)
+				console.log(canvas2); //this is just like print 
+				
+                //BEGIN:CODE FOR A2
+				//WRITE YOUR CODE
+				
+				//END:CODE FOR A2				
+            </script>
+        </div>
+
+		<div class="v3">
+            <p>Q3 solution</p>
+            <script>
+                var canvas2 = d3.selectAll('div.v3') //I selected div v3
+                .append("svg") //I created a space for scalable vector graphics
+                .attr("width",600)
+                .attr("height",200)
+				console.log(canvas2); //this is just like print 
+				
+                //BEGIN:CODE FOR A3
+				//WRITE YOUR CODE
+				
+				//END:CODE FOR A3				
+            </script>
+        </div> 
+     
+    </body>
+</html>
