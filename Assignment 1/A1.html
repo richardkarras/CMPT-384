@@ -36,8 +36,47 @@
 				
                 //BEGIN:CODE FOR A1
 				//WRITE YOUR CODE
-				
-				//END:CODE FOR A1				
+                
+                //Function to generate random real numbers between a given range.
+                function getRandomReal(min,max) {
+                    return math.random() * (max - min) + min;
+                }
+				//Style for Scatter plot
+                <style>
+                    .axis path,
+                    .axis line {
+                        fill: none;
+                        shape-rendering: crispEdges;
+                    }
+                    .dot {
+                        fill: gunmetalgrey;
+                        stroke: black;
+                    }
+                </style>
+                //prepare array to house the x and y values for the scatter plot
+                const rows = 1000; 
+                const cols = 2;
+                const dataArray = [];
+                //set bounds for random numbers
+                const xMin = -2.0;
+                const xMax = 10.0;
+                const yMin = -3.0;
+                const yMax = 3.0;
+                //While loop to increment when random points satisfy: (2x^2 + y^2)^2 - 14x(2x^2-3y^2) + 50(y^2 - x^2) < 0
+                var pointCount = 0;
+                while (pointCount < 1000){
+                    var x = getRandomReal(xMin,xMax);
+                    var y = getRandomReal(yMin,yMax);
+                    //Test that the equation is satisfied with the x and y values before saving to array and incrementing the loop counter
+                    if (((((2*x**2) + (y**2))**2)-(14*x)*((2*x**2)-(3*y**2))+50*((y**2)-(x**2)))<0){
+                        dataArray[pointCount][0]=x;
+                        dataArray[pointCount][1]=y;
+                        pointCount++;
+                    }
+                }
+                
+
+                //END:CODE FOR A1				
             </script>
         </div>
 		
