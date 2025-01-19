@@ -39,29 +39,19 @@
                 
                 //Function to generate random real numbers between a given range.
                 function getRandomReal(min,max) {
-                    return math.random() * (max - min) + min;
+                    return Math.random() * (max - min) + min;
                 }
-				//Style for Scatter plot
-                <style>
-                    .axis path,
-                    .axis line {
-                        fill: none;
-                        shape-rendering: crispEdges;
-                    }
-                    .dot {
-                        fill: gunmetalgrey;
-                        stroke: black;
-                    }
-                </style>
+                
                 //prepare array to house the x and y values for the scatter plot
                 const rows = 1000; 
-                const cols = 2;
                 const dataArray = [];
+                
                 //set bounds for random numbers
                 const xMin = -2.0;
                 const xMax = 10.0;
                 const yMin = -3.0;
                 const yMax = 3.0;
+
                 //While loop to increment when random points satisfy: (2x^2 + y^2)^2 - 14x(2x^2-3y^2) + 50(y^2 - x^2) < 0
                 var pointCount = 0;
                 while (pointCount < 1000){
@@ -69,13 +59,38 @@
                     var y = getRandomReal(yMin,yMax);
                     //Test that the equation is satisfied with the x and y values before saving to array and incrementing the loop counter
                     if (((((2*x**2) + (y**2))**2)-(14*x)*((2*x**2)-(3*y**2))+50*((y**2)-(x**2)))<0){
-                        dataArray[pointCount][0]=x;
-                        dataArray[pointCount][1]=y;
+                        dataArray.push([x,y]);
                         pointCount++;
+                        console.log("X: ", x, "Y: ", y);
                     }
                 }
                 
-
+                // Margins and dimensions for scatter plot
+                const c2Margin = { top: 20, right: 20, bottom: 40, left: 50};
+                const plotWidth = 600 - c2Margin.left - c2Margin.right;
+                const plotHeight = 200 - c2Margin.top - c2Margin.bottom;
+                
+                // Create a group element within the SVG
+                const q2svg = canvas2.append("g")
+                    .attr("transform", `translate(${c2Margin.left},${c2Margin.top})`);
+                
+                // Define Scales
+                const canvas2xScale = d3.scaleLinear()
+                    .domain([d3.min(dataArray, d => d[0]), d3.max(dataArray, d => d[0])])
+                    .range([0, plotWidth]);
+                const canvas2yScale = d3.scaleLinear()
+                    .domain([d3.min(dataArray, d => d[1]), d3.max(dataArray, d => d[1])])
+                    .range([0, plotHeight]);
+                
+                q2svg.selectAll('.dot')
+                    .data(dataArray)
+                    .enter()
+                    .append("circle")
+                    .attr("class","dot")
+                    .attr("cx", d=> canvas2xScale(d[0]))//X values from Array
+                    .attr("cy", d=> canvas2yScale(d[1]))//Y values from Array
+                    .attr("r", 3) //Radius for each point
+                    .style("fill","steelblue");
                 //END:CODE FOR A1				
             </script>
         </div>

@@ -1,0 +1,90 @@
+<div class="v1">
+    <p>Q1 solution</p>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        var canvas2 = d3.selectAll('div.v1') // Select the div with class v1
+            .append("svg") // Create an SVG element
+            .attr("width", 600)
+            .attr("height", 400);
+        console.log(canvas2); // Debugging purpose
+
+        //Begin: CODE for A1
+        //Write your code
+
+        // Function to generate random real numbers between a given range
+        function getRandomReal(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Prepare array to house the x and y values for the scatter plot
+        const rows = 1000;
+        const dataArray = [];
+        // Set bounds for random numbers
+        const xMin = -2.0;
+        const xMax = 10.0;
+        const yMin = -3.0;
+        const yMax = 3.0;
+
+        // While loop to increment when random points satisfy the given equation
+        let pointCount = 0;
+        while (pointCount < rows) {
+            let x = getRandomReal(xMin, xMax);
+            let y = getRandomReal(yMin, yMax);
+            if (((((2 * x ** 2) + (y ** 2)) ** 2) - (14 * x) * ((2 * x ** 2) - (3 * y ** 2)) + 50 * ((y ** 2) - (x ** 2))) < 0) {
+                dataArray.push([x, y]);
+                pointCount++;
+            }
+        }
+
+        // Margins and dimensions for the scatter plot
+        const c2Margin = { top: 20, right: 20, bottom: 40, left: 50 };
+        const plotWidth = 600 - c2Margin.left - c2Margin.right;
+        const plotHeight = 400 - c2Margin.top - c2Margin.bottom;
+
+        // Create a group element within the SVG
+        const q2svg = canvas2.append("g")
+            .attr("transform", `translate(${c2Margin.left},${c2Margin.top})`);
+
+        // Define scales
+        const canvas2xScale = d3.scaleLinear()
+            .domain([d3.min(dataArray, d => d[0]), d3.max(dataArray, d => d[0])])
+            .range([0, plotWidth]);
+
+        const canvas2yScale = d3.scaleLinear()
+            .domain([d3.min(dataArray, d => d[1]), d3.max(dataArray, d => d[1])])
+            .range([plotHeight, 0]); // Invert y-axis for proper orientation
+
+        // Add X axis
+        q2svg.append("g")
+            .attr("transform", `translate(0, ${plotHeight})`)
+            .call(d3.axisBottom(canvas2xScale))
+            .append("text")
+            .attr("x", plotWidth / 2)
+            .attr("y", 30)
+            .attr("fill", "black")
+            .style("font-size", "12px")
+            .text("X Axis");
+
+        // Add Y axis
+        q2svg.append("g")
+            .call(d3.axisLeft(canvas2yScale))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -plotHeight / 2)
+            .attr("y", -35)
+            .attr("fill", "black")
+            .style("font-size", "12px")
+            .text("Y Axis");
+
+        // Plot the points
+        q2svg.selectAll('.dot')
+            .data(dataArray)
+            .enter()
+            .append("circle")
+            .attr("class", "dot")
+            .attr("cx", d => canvas2xScale(d[0])) // X values from the array
+            .attr("cy", d => canvas2yScale(d[1])) // Y values from the array
+            .attr("r", 3) // Radius for each point
+            .style("fill", "steelblue");
+    </script>
+</div>
