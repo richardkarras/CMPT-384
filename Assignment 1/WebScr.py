@@ -22,11 +22,11 @@ f = open(fname, "r")
 r = f.read()
 
 soup = BeautifulSoup(r, 'html.parser')
-#print(soup.prettify())
+print(soup.prettify())
 
 # you can select class and print its content
-#content = soup.find_all(class_='gsc_a_t')
-#print(content)
+content = soup.find_all(class_='gsc_a_t')
+print(content)
 fcsv = open(id + '.csv', "w")
 fcsv.write('PaperId,Year,CiteCount\n')
 counter = 0
