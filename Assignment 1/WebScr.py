@@ -61,7 +61,14 @@ for a in soup.find_all('a', href=True):
 
 
         #WRITE YOUR CODE HERE
+        numPapers = 20
+        citIndex = 0
+        for yr in years:
+            fcsv.write(f"{counter},{yr},{citations[citIndex].text}\n")
+            citIndex += 1
         
+        if (numPapers == counter):
+            break
 fcsv.close()
 print('done')
 
