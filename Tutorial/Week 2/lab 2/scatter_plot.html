@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <title> COVID-19 in Saskatchewan </title>
+        <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+    
+    <body>
+        <!-- Chart Title -->
+        <h3 style="padding-left: 50px;">COVID-19 at Saskatchewan, Canada on Sep 06, 2020</h3>
+
+        <div id="my_chart">
+        </div>
+    </body>
+
+    
+    <script type="text/javascript">
+        // This is margin for the chart. It is required since we have axis labels. 
+        // Axis labels required some spaces (left and top).
+        var margin = {top: 50, right: 10, bottom: 10, left: 50}
+        // Size for the SVG element
+        var svg_size = {width: 500, height: 400};
+
+        // Actual available width and height for the chart have been calculated after subtracting the margin
+        var width = svg_size.width - margin.left - margin.right;
+        var height = svg_size.height - margin.top - margin.bottom;
+
+        // CSV file has been read
+        d3.csv("cases_6Sep20.csv").then(function(data){
+            // You should do data pre-processing or modification or cleaning or filling in here
+            // before creating the chart 
+            // active cases have to be calculated
+            
+            // Both for loop does the same work. Follow whatever you like
+            data.forEach(function(d){
+                d.Active_Cases = d.Total_Cases - d.Recovered - d.Deaths;
+            });
+            // for(var i=0; i< data.length; i++)
+            // {
+            //    data[i].Active_Cases = data[i].Total_Cases - data[i].Recovered - data[i].Deaths;
+            // }
+            console.log(data);
+            generateVisualization(data);
+        });
+
+
+        function generateVisualization(dataset){
+            // svg element has appended into div with id='my_chart'
+            // svg width and height has been set also
+            var svg_g = d3.select('#my_chart')
+                        .append('svg')
+                        .attr('width', svg_size.width)
+                        .attr('height', svg_size.height)
+                        // Inside svg a graphic element 'g' tag has been added and it has been translated to 
+                        // the top-left (inner side) of the margin
+                        .append('g')
+                        .attr('transform', 'translate('+ margin.left +', '+ margin.top +')');
+
+            // Maximum value have been calculated for Total Cases and Active Cases
+            max_active_case = d3.max(dataset, d => d.Active_Cases);
+            max_total_case = d3.max(dataset, d => d.Total_Cases);
+
+            // X axis scale has been defined
+            // domain is the range of our data (what we have)
+            // range is the range of available pixels for the chart (what we want)
+            var x_axis_scale = d3.scaleLinear()
+                                 .domain([0, max_total_case])
+                                 .range([0, width]);
+            // X axis has been created at the top
+            var x_axis = svg_g.append('g')
+                                .call(d3.axisTop(x_axis_scale));
+            
+            // X axis label has been created
+            // It has been translated at the middle of the X axis
+            var x_axis_label = svg_g.append('text')
+                                    .attr("transform", 'translate(' + width/2 +', -30)')
+                                    .attr('text-anchor', 'middle')
+                                    .text('Total Cases');
+            
+            // Y axis scale has been defined
+            // domain is the range of our data (what we have)
+            // range is the range of available pixels for the chart (what we want)
+            var y_axis_scale = d3.scaleLinear()
+                                .domain([0, max_active_case])
+                                .range([0, height]);
+            // Y axis has been created on the left side
+            var y_axis = svg_g.append('g')
+                                .call(d3.axisLeft(y_axis_scale));
+            // Y axis label has been created
+            // It has been translated at the middle of the Y axis and then rotated 90 degree (anti-clockwise)
+            var y_axis_label = svg_g.append('text')
+                                    .attr("transform", 'translate(-30, '+ height/2 +') rotate(-90)')
+                                    .attr('text-anchor', 'middle')                                  
+                                    .text('Active Cases');
+
+            // Creating all the circles
+            var circles = svg_g.append('g')
+                                // Creating virtual array since circle does not exist in g element
+                                .selectAll('circle')
+                                // Join data with virtual array
+                                .data(dataset)
+                                .enter()
+                                // From this point, everything will be iterated
+                                // Appending circles
+                                .append('circle')
+                                .attr('r', 5)
+                                .attr('cx', function(d){
+                                    // Caliing x_axis_scale for values
+                                    return x_axis_scale(d.Total_Cases);
+                                })
+                                .attr('cy', function(d){
+                                    // Caliing y_axis_scale for values
+                                    return y_axis_scale(d.Active_Cases);
+                                })
+                                .attr('fill', function(d){
+                                    return d.Color;
+                                });
+        };
+    </script>
+</html>

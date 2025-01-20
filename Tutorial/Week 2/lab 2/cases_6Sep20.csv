@@ -1,0 +1,7 @@
+﻿Region,Total_Cases,Recovered,Deaths,Color
+Far North,349,341,7,purple
+North,246,233,6,blue
+Central (excluding Saskatoon),178,169,2,green
+Saskatoon,313,292,2,yellow
+South (excluding Regina),429,410,6,orange
+Regina,136,134,1,red
