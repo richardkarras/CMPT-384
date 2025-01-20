@@ -22,11 +22,11 @@ f = open(fname, "r")
 r = f.read()
 
 soup = BeautifulSoup(r, 'html.parser')
-#print(soup.prettify())
+print(soup.prettify())
 
 # you can select class and print its content
-#content = soup.find_all(class_='gsc_a_t')
-#print(content)
+content = soup.find_all(class_='gsc_a_t')
+print(content)
 fcsv = open(id + '.csv', "w")
 fcsv.write('PaperId,Year,CiteCount\n')
 counter = 0
@@ -61,7 +61,14 @@ for a in soup.find_all('a', href=True):
 
 
         #WRITE YOUR CODE HERE
+        numPapers = 20
+        citIndex = 0
+        for yr in years:
+            fcsv.write(f"{counter},{yr},{citations[citIndex].text}\n")
+            citIndex += 1
         
+        if (numPapers == counter):
+            break
 fcsv.close()
 print('done')
 
