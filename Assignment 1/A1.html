@@ -98,7 +98,7 @@
         <div class="v2">
             <p>Q2 solution</p>
             <script>
-                var canvas2 = d3.selectAll('div.v2') //I selected div v2
+                var canvas3 = d3.selectAll('div.v2') //I selected div v2
                 .append("svg") //I created a space for scalable vector graphics
                 .attr("width",600)
                 .attr("height",200)
@@ -106,7 +106,54 @@
 				
                 //BEGIN:CODE FOR A2
 				//WRITE YOUR CODE
-				
+				//Function to output
+                function q2Viz(rawData,dataset){
+                    //Get number of papers
+                    const pIdRows = dataset.length;
+                    //Find min/max for Year (to generate columns)
+                    const q2YrMin = d3.min(rawData, d => d.Year);
+                    const q2YrMax = d3.max(rawData, d => d.Year);
+                    //Find max CiteCount (to build scaling)
+                    const q2CiteMax = d3.max(rawData, d => d.CiteCount);                                        
+                    //x axis -> year(s) cited
+                    const q2YrMinOffset = q2CiteMax / 2;
+                    const q2xLabel = "Year(s) cited";
+                    //y axis -> PaperId
+                    const q2idMinOffset = q2CiteMax /2;
+                    const q2yLabel = "PaperId";
+                    
+                    //Draw scaled circles
+                    canvas3.selectAll('circle')
+                        .data(dataset) //array from csv should be inserted here
+                        .enter()
+                        .append('circle')
+                        .attr("cx", function (d,i) {return q2YrMinOffset + (i*q2CiteMax);}) //plot x position for circles //return 50 + (i*100) is a placeholder
+                        .attr("cy", function (d,i) {return q2idMinOffset + (i*q2CiteMax);})
+                        .attr("r", function (d) {return d.CiteCount;});
+                }
+                //import csv
+                d3.csv("xn6BVdoAAAAJ.csv").then(function(q2data){//Headers for CSV: PaperId,Year,CiteCount
+                    console.log(q2data); //output to help build new array - remove after Q2 complete
+                    
+                    //Data processing
+                    //Convert strings to numbers
+                    q2data.forEach(function(d) {
+                        d.PaperId = parseInt(d.PaperId);
+                        d.Year = parseInt(d.Year);
+                        d.CiteCount = parseInt(d.CiteCount);
+                    });
+                    const q2byPaperId = [];
+                    q2data.forEach(function(d) {
+                        if (!q2byPaperId[d.PaperId]) {
+                            q2byPaperId[d.PaperId] = [];
+                        }
+                        q2byPaperId[d.PaperId].push({ Year: d.Year, CiteCount: d.CiteCount });
+                    });
+                                        
+                    console.log(q2byPaperId);
+                    q2Viz(q2data,q2byPaperId);
+                });
+                
 				//END:CODE FOR A2				
             </script>
         </div>
@@ -114,7 +161,7 @@
 		<div class="v3">
             <p>Q3 solution</p>
             <script>
-                var canvas2 = d3.selectAll('div.v3') //I selected div v3
+                var canvas4 = d3.selectAll('div.v3') //I selected div v3
                 .append("svg") //I created a space for scalable vector graphics
                 .attr("width",600)
                 .attr("height",200)
