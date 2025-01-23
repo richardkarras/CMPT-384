@@ -100,36 +100,40 @@
             <script>
                 var canvas3 = d3.selectAll('div.v2') //I selected div v2
                 .append("svg") //I created a space for scalable vector graphics
-                .attr("width",600)
-                .attr("height",200)
-				console.log(canvas2); //this is just like print 
+                .attr("width",1200)
+                .attr("height",900)
+				console.log(canvas3); //this is just like print 
 				
                 //BEGIN:CODE FOR A2
 				//WRITE YOUR CODE
 				//Function to output
-                function q2Viz(rawData,dataset){
+                function q2Viz(dataset){
                     //Get number of papers
-                    const pIdRows = dataset.length;
-                    //Find min/max for Year (to generate columns)
-                    const q2YrMin = d3.min(rawData, d => d.Year);
-                    const q2YrMax = d3.max(rawData, d => d.Year);
-                    //Find max CiteCount (to build scaling)
-                    const q2CiteMax = d3.max(rawData, d => d.CiteCount);                                        
+                    const pIdRows = d3.max(dataset, d => d.PaperId);
+                    console.log("pIdRows: ",pIdRows);
+                    //Get date range
+                    const q2YrMin = d3.min(dataset, d => d.Year);
+                    const q2YrMax = d3.max(dataset, d => d.Year);
+                    console.log("q2YrMin: ",q2YrMin,"q2YrMax",q2YrMax);
+                    //Get max number of citations
+                    const q2CiteMax = d3.max(dataset, d => d.CiteCount);
+                    console.log("q2CiteMax:",q2CiteMax);
                     //x axis -> year(s) cited
-                    const q2YrMinOffset = q2CiteMax / 2;
+                    var q2xScale = 600 / ((q2YrMax-q2YrMin)*q2CiteMax);
                     const q2xLabel = "Year(s) cited";
                     //y axis -> PaperId
-                    const q2idMinOffset = q2CiteMax /2;
+                    var q2yScale = 200 / (pIdRows);
                     const q2yLabel = "PaperId";
-                    
+                    console.log("x scale: ",q2xScale,"y scale: ",q2yScale);
                     //Draw scaled circles
+ 
                     canvas3.selectAll('circle')
                         .data(dataset) //array from csv should be inserted here
                         .enter()
                         .append('circle')
-                        .attr("cx", function (d,i) {return q2YrMinOffset + (i*q2CiteMax);}) //plot x position for circles //return 50 + (i*100) is a placeholder
-                        .attr("cy", function (d,i) {return q2idMinOffset + (i*q2CiteMax);})
-                        .attr("r", function (d) {return d.CiteCount;});
+                        .attr("cx", function(d) { return (d.year-q2YrMin+1.0)*q2CiteMax;}) // scale x position based on year
+                        .attr("cy", function(d) { return (d.PaperId * q2CiteMax / 20);}) // scale y position based on PaperId
+                        .attr("r", function(d) { return d.CiteCount*q2xScale; }); // radius based on CiteCount
                 }
                 //import csv
                 d3.csv("xn6BVdoAAAAJ.csv").then(function(q2data){//Headers for CSV: PaperId,Year,CiteCount
@@ -142,16 +146,8 @@
                         d.Year = parseInt(d.Year);
                         d.CiteCount = parseInt(d.CiteCount);
                     });
-                    const q2byPaperId = [];
-                    q2data.forEach(function(d) {
-                        if (!q2byPaperId[d.PaperId]) {
-                            q2byPaperId[d.PaperId] = [];
-                        }
-                        q2byPaperId[d.PaperId].push({ Year: d.Year, CiteCount: d.CiteCount });
-                    });
-                                        
-                    console.log(q2byPaperId);
-                    q2Viz(q2data,q2byPaperId);
+                    
+                    q2Viz(q2data);
                 });
                 
 				//END:CODE FOR A2				
@@ -165,7 +161,7 @@
                 .append("svg") //I created a space for scalable vector graphics
                 .attr("width",600)
                 .attr("height",200)
-				console.log(canvas2); //this is just like print 
+				console.log(canvas4); //this is just like print 
 				
                 //BEGIN:CODE FOR A3
 				//WRITE YOUR CODE
