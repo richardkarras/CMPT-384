@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js">
+        </script>
+    </head>
+<body>
+<div class="v2">
+    <p>Q2 solution</p>
+    <script>
+        const svgWidth = 600;
+        const svgHeight = 200;
+        var canvas3 = d3.selectAll('div.v2') // Select div with class 'v2'
+            .append("svg") // Create an SVG container
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
+        
+        console.log(canvas3); // Log canvas for debugging
+
+        // Function to visualize the data
+        function q2Viz(dataset) {
+            // Get number of unique PaperIds
+            const paperIds = Array.from(new Set(dataset.map(d => d.PaperId)));
+            const pIdRows = paperIds.length;
+            console.log("pIdRows: ", pIdRows);
+
+            // Get date range
+            const q2YrMin = d3.min(dataset, d => d.Year);
+            const q2YrMax = d3.max(dataset, d => d.Year);
+            const yearRange = q2YrMax - q2YrMin + 1;
+            console.log("q2YrMin: ", q2YrMin, "q2YrMax: ", q2YrMax);
+
+            // Get max number of citations
+            const q2CiteMax = d3.max(dataset, d => d.CiteCount);
+            console.log("q2CiteMax: ", q2CiteMax);
+
+            // Compute grid dimensions
+            const cellWidth = svgWidth / yearRange; // Width of each column
+            const cellHeight = svgHeight / pIdRows; // Height of each row
+
+            // Compute the maximum possible radius
+            const maxRadius = Math.min(cellWidth, cellHeight) / 2;
+            console.log("Max radius: ", maxRadius);
+            //Testing output for scaled data:
+            dataset.forEach(function(d) {
+                console.log("PaperId: ", d.PaperId, "Year: ", d.Year, "Cite Count: ", d.CiteCount);
+                console.log("cx:", ((d.Year - q2YrMin + 0.5) * cellWidth), "cy:", ((d.PaperId + 0.5) * cellHeight), "r:", (Math.min(d.CiteCount / q2CiteMax * maxRadius, maxRadius)));
+            });
+            // Draw scaled circles
+            canvas3.selectAll('circle')
+                .data(dataset) // Bind data
+                .enter()
+                .append('circle')
+                .attr("cx", function(d) { 
+                    return (d.Year - q2YrMin + 0.5) * cellWidth; // Center of the column
+                })
+                .attr("cy", function(d) { 
+                    return (d.PaperId + 0.5) * cellHeight; // Center of the row
+                })
+                .attr("r", function(d) { 
+                    return Math.min(d.CiteCount / q2CiteMax * maxRadius, maxRadius); // Scale radius
+                })
+                .attr("fill", "steelblue"); // Circle color
+        }
+
+        // Import CSV
+        d3.csv("xn6BVdoAAAAJ.csv").then(function(q2data) {
+            console.log(q2data); // Output data for debugging            
+            // Convert data types
+            var pIdMax = d3.max(q2data, d => d.PaperId);
+            console.log("Max PaperId:",pIdMax);
+            q2data = q2data.filter(function(d) {
+                if (isNaN(d.PaperId) || d.PaperId < 1 || d.Year == "" || isNaN(d.CiteCount)) {
+                    return false;
+                }
+                d.PaperId = parseFloat(d.PaperId);
+                d.Year = parseFloat(d.Year);
+                d.CiteCount = parseFloat(d.CiteCount);
+                return true;
+            });
+            console.log(q2data); // Output data for debugging
+            // Visualize data
+            q2Viz(q2data);
+        });
+    </script>
+</div>
+</body>
+</html>
