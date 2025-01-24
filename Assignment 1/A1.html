@@ -61,7 +61,6 @@
                     if (((((2*x**2) + (y**2))**2)-(14*x)*((2*x**2)-(3*y**2))+50*((y**2)-(x**2)))<0){
                         dataArray.push([x,y]);
                         pointCount++;
-                        console.log("X: ", x, "Y: ", y);
                     }
                 }
                 
@@ -106,7 +105,68 @@
 				
                 //BEGIN:CODE FOR A2
 				//WRITE YOUR CODE
+<<<<<<< HEAD
 				
+=======
+				//Function to output
+                // Function to visualize the data
+        function q2Viz(dataset) {
+            // Get number of unique PaperIds
+            const paperIds = Array.from(new Set(dataset.map(d => d.PaperId)));
+            const pIdRows = paperIds.length;
+
+            // Get date range
+            const q2YrMin = d3.min(dataset, d => d.Year);
+            const q2YrMax = d3.max(dataset, d => d.Year);
+            const yearRange = q2YrMax - q2YrMin + 1;
+
+            // Get max number of citations
+            const q2CiteMax = d3.max(dataset, d => d.CiteCount);
+
+            // Compute grid dimensions
+            const cellWidth = 600 / yearRange; // Width of each column
+            const cellHeight = 200 / pIdRows; // Height of each row
+
+            // Compute the maximum possible radius
+            const maxRadius = Math.min(cellWidth, cellHeight) / 2;
+            // Draw scaled circles
+            canvas3.selectAll('circle')
+                .data(dataset) // Bind data
+                .enter()
+                .append('circle')
+                .attr("cx", function(d) { 
+                    return (d.Year - q2YrMin + 0.5) * cellWidth; // Center of the column
+                })
+                .attr("cy", function(d) { 
+                    return (d.PaperId + 0.5) * cellHeight; // Center of the row
+                })
+                .attr("r", function(d) { 
+                    return Math.min(d.CiteCount / q2CiteMax * maxRadius, maxRadius); // Scale radius
+                })
+                .attr("fill", "steelblue"); // Circle color
+        }
+
+        // Import CSV
+        d3.csv("xn6BVdoAAAAJ.csv").then(function(q2data) {
+            // Convert data types
+            var pIdMax = d3.max(q2data, d => d.PaperId);
+
+            // Filter junk data, cast to numbers.
+            q2data = q2data.filter(function(d) {
+                if (isNaN(d.PaperId) || d.PaperId < 1 || d.Year == "" || isNaN(d.CiteCount)) {
+                    return false;
+                }
+                d.PaperId = parseInt(d.PaperId);
+                d.Year = parseInt(d.Year);
+                d.CiteCount = parseInt(d.CiteCount);
+                return true;
+            });
+
+            // Visualize data
+            q2Viz(q2data);
+        });
+                
+>>>>>>> 2dc6119 (Q2 complete, Q3 need to fix csv import.  No header)
 				//END:CODE FOR A2				
             </script>
         </div>
@@ -122,7 +182,74 @@
 				
                 //BEGIN:CODE FOR A3
 				//WRITE YOUR CODE
-				
+                // Function to normalize data
+                function normalizeData(data) {
+                    const flatData = data.flat();
+                    const min = d3.min(flatData);
+                    const max = d3.max(flatData);
+                    return data.map(row => row.map(value => (value - min) / (max - min)));
+                }
+
+                // Function to draw squares
+                function drawSquares(data) {
+                    const squareSize = 5;
+                    const colors = ["white", "green", "blue", "red"];
+                    const percentiles = [0.25, 0.5, 0.75];
+
+                    // Calculate percentiles
+                    const flatData = data.flat();
+                    const sortedData = flatData.slice().sort(d3.ascending);
+                    const thresholds = percentiles.map(p => d3.quantile(sortedData, p));
+
+                    // Draw squares
+                    data.forEach((row, i) => {
+                        row.forEach((value, j) => {
+                            let color;
+                            if (value <= thresholds[0]) color = colors[0];
+                            else if (value <= thresholds[1]) color = colors[1];
+                            else if (value <= thresholds[2]) color = colors[2];
+                            else color = colors[3];
+
+                            canvas4.append("rect")
+                                .attr("x", j * squareSize)
+                                .attr("y", i * squareSize)
+                                .attr("width", value * squareSize)
+                                .attr("height", value * squareSize)
+                                .attr("fill", color);
+                        });
+                    });
+                }
+
+                // Import CSV
+                d3.text("msl.csv",function(text){
+                    var q3data = d3.csvParseRows(text).map(function(row){
+                        return row.map(function(value) {
+                            return +value;
+                        });
+                    });
+                }).then(function(q3data) {
+                    // Convert data to numeric values
+                    console.log(q3data);
+                    const numericData = q3data.map(row => Object.values(row).map(Number));
+
+                    // Normalize data
+                    const normalizedData = normalizeData(numericData);
+
+                    // Log first row and first column
+                    console.log("First row:", normalizedData[0]);
+                    console.log("First column:", normalizedData.map(row => row[0]));
+
+                    // Draw squares
+                    drawSquares(normalizedData);
+
+                    // Calculate and log percentiles
+                    const flatData = normalizedData.flat();
+                    const sortedData = flatData.slice().sort(d3.ascending);
+                    const percentiles = [0.25, 0.5, 0.75].map(p => d3.quantile(sortedData, p));
+                    console.log("25th percentile:", percentiles[0]);
+                    console.log("50th percentile:", percentiles[1]);
+                    console.log("75th percentile:", percentiles[2]);
+                });
 				//END:CODE FOR A3				
             </script>
         </div> 
