@@ -215,22 +215,17 @@
                         });
                     });
                 }
-
                 // Import CSV
-                d3.text("msl.csv",function(text){
-                    var q3data = d3.csvParseRows(text).map(function(row){
-                        return row.map(function(value) {
-                            return +value;
-                        });
+                d3.text("msl.csv").then(function(text){
+                    var q3data = d3.csvParseRows(text, function(d) {
+                        return d.map(Number);
                     });
-                }).then(function(q3data) {
                     // Convert data to numeric values
-                    console.log(q3data);
                     const numericData = q3data.map(row => Object.values(row).map(Number));
 
                     // Normalize data
                     const normalizedData = normalizeData(numericData);
-
+                    
                     // Log first row and first column
                     console.log("First row:", normalizedData[0]);
                     console.log("First column:", normalizedData.map(row => row[0]));
