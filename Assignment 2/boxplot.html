@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+            svg{
+                display: block;
+                margin: auto;
+            }    
+
+        </style>
+    </head>
+    <body>
+        Hello Class!
+        <div class="v1"  >
+            <p>Edit this code to complete the assignmet. Do not change the x-axis position of the boxes.</p>
+            <script>                
+                boxplot = d3.selectAll('div.v1').append("svg")
+                .attr("width",600)
+                .attr("height",230);
+
+                data = [12,19,11,13,12,22,13,4,15,16,18,19,20,12,11,9];
+                sorteddata = data.sort(d3.ascending);
+                console.log(sorteddata);
+                var q1 = d3.quantile(sorteddata,0.25);
+                var q2 = d3.quantile(sorteddata,0.5);
+                var q3 = d3.quantile(sorteddata,0.75);
+
+                var min = d3.min(data);
+                var max = d3.max(data);
+
+
+                var y = d3.scaleLinear()
+                .domain([0,d3.max(data)])
+                .range([200,0]);
+
+
+                boxplot.append("g")
+                .attr("transform",
+                    "translate(" + 20 + "," + 10 + ")")
+                    .call(d3.axisLeft(y))
+                
+				var label = ["A","B", "C","D"];
+				
+                var x = d3.scalePoint()                   
+                    .domain(label)
+                    .range([ 0, 200 ]);
+
+                boxplot.append("g")
+                .attr("transform",
+                    "translate(" + (50+20) + "," + 210 + ")")
+                    .call(d3.axisBottom(x))
+
+			for(i=0; i<4; i++){
+                boxplot.append("line")
+                .attr("x1",x(label[i])+50+20)
+                .attr("y1",y(min))
+                .attr("x2",x(label[i])+50+20)
+                .attr("y2",y(max))
+                .attr("stroke","black");
+                 
+                boxplot.append("rect")
+                .attr("x",x(label[i])+50+20-20)
+                .attr("y",y(q3))
+                .attr("width",40)
+                .attr("height",y(q1)-y(q3))
+                .attr("stroke","black")
+                .attr("fill","red");
+
+                boxplot.append("line")
+                .attr("x1",x(label[i])+50+20-20)
+                .attr("y1",y(q2))
+                .attr("x2",x(label[i])+50+20+20)
+                .attr("y2",y(q2))
+                .attr("stroke","black");
+			}
+			
+            </script>
+        </div>
+        
+
+    </body>
+</html>
+

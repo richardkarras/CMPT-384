@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>MDS</title>
+		<script type="text/javascript" src="d3.v7.min.js"></script>
+		<script type="text/javascript" src="numeric.js"></script>
+		<script type="text/javascript" src="mds.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+	 
+		<script type="text/javascript">
+		
+			var width = 800;
+			var height = 400;
+			
+			var dataset;
+			var coordinates;
+			
+			//Read the data
+			d3.csv("mds.csv").then(function(data) { 				
+				dataset = data; 					
+				generateVisualization(); 
+			});	
+			
+
+
+			function generateVisualization(){
+				
+				
+				
+				var distanceMatrix = [];
+				
+
+				//INSTRUCTION				
+				//Fill in the distanceMatrix array with distances 
+				//distanceMatrix[i][j] must contain the distance between 
+				//the ith and jth datapoints		
+				//WRITE YOUR CODE// 
+				
+				
+				
+				//if your code is correct, at this point the console.log
+				//will probably show 190
+				console.log(distanceMatrix[5][6]);
+				
+				
+				
+				var coordinates;			
+				//INSTRUCTION						
+				//Call mds.classic(distanceMatrix) and assign the output to the "coordinates" variable 
+				//WRITE YOUR CODE// 
+
+				 		 
+				
+	 
+				
+				/*****************/
+				/*Well Done! You completed everything by now! You should be able to see a plot*/
+				/*****************/
+ 
+				
+				
+				var loc = numeric.transpose(coordinates);
+				console.log(loc);
+
+ 				locations   = [];
+
+				for ( var i = 0; i < dataset.length; i++ ) {
+				   locations.push({x: loc[0][i], y: loc[1][i], c: dataset[i].E});
+				} 
+				console.log(locations);
+				
+				//create svg element
+				var svg = d3.select("body")
+							.append("svg")
+							.attr("width", width) 
+							.attr("height", height);
+							 							
+							
+				var xScale = d3.scaleLinear()
+					    .domain([
+							d3.min(Object.keys(locations), function(d) { return locations[d].x; }),
+							d3.max(Object.keys(locations), function(d) { return locations[d].x; }),
+							])
+					    .range([10, width-10]);
+
+				var yScale = d3.scaleLinear()
+					    .domain([
+							d3.min(Object.keys(locations), function(d) { return locations[d].y; }),
+							d3.max(Object.keys(locations), function(d) { return locations[d].y; }),
+							])
+					    .range([10, height-10]);
+						
+				//add circles
+				svg.selectAll("circle").data(Object.keys(locations)).enter()
+					.append("circle")
+					.attr("cx", function(d){return xScale(locations[d].x);} )
+					.attr("cy", function(d){return yScale(locations[d].y);} )
+					.attr("r",function(d){return 3; })
+					.attr("stroke-width", 1)
+					.attr("fill", function(d){
+						if(locations[d].c == "Y") return "yellow";
+						if(locations[d].c == "R") return "red";
+						if(locations[d].c == "G") return "green"; 	
+						if(locations[d].c == "B") return "blue"; 	
+						});
+						
+				
+			}					
+	
+			
+		</script>
+	</body>
+</html>
