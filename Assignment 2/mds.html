@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>MDS</title>
-		<script type="text/javascript" src="d3.v7.min.js"></script>
+		<script type="text/javascript" src="d3.v5.min.js"></script>
 		<script type="text/javascript" src="numeric.js"></script>
 		<script type="text/javascript" src="mds.js"></script>
 		<style type="text/css">
@@ -22,7 +22,7 @@
 			
 			//Read the data
 			d3.csv("mds.csv").then(function(data) { 				
-				dataset = data; 					
+				dataset = data; 	
 				generateVisualization(); 
 			});	
 			
@@ -39,25 +39,35 @@
 				//Fill in the distanceMatrix array with distances 
 				//distanceMatrix[i][j] must contain the distance between 
 				//the ith and jth datapoints		
-				//WRITE YOUR CODE// 
+				//WRITE YOUR CODE//
 				
-				
+				const numStudents = dataset.length; //get for dimension of square matrix
+
+				for(let i=0; i < numStudents; i++){ //loop through all students for each row
+					distanceMatrix[i] = [];
+					for(let j=0; j < numStudents; j++){ //loop through all students for each column
+						if(i===j){ //distance set to 0 when i = j, as they represent the same student
+							distanceMatrix[i].push(0);
+						}
+						else{//calculate difference between each assignment grade from student i to student j
+							const a1 = dataset[i].A - dataset[j].A;
+							const a2 = dataset[i].B - dataset[j].B;
+							const a3 = dataset[i].C - dataset[j].C;
+							const a4 = dataset[i].D - dataset[j].D;
+							distanceMatrix[i].push(a1 * a1 + a2 * a2 + a3 * a3 + a4 * a4);//calculate distance squared and add to matrix
+						}
+					}
+				};
 				
 				//if your code is correct, at this point the console.log
 				//will probably show 190
 				console.log(distanceMatrix[5][6]);
-				
-				
-				
-				var coordinates;			
+							
 				//INSTRUCTION						
 				//Call mds.classic(distanceMatrix) and assign the output to the "coordinates" variable 
 				//WRITE YOUR CODE// 
-
-				 		 
-				
-	 
-				
+				coordinates = mds.classic(distanceMatrix); // call mds.classic() function with distanceMatrix passed to the function, store return in coordinates
+								
 				/*****************/
 				/*Well Done! You completed everything by now! You should be able to see a plot*/
 				/*****************/

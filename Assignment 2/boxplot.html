@@ -18,63 +18,69 @@
                 boxplot = d3.selectAll('div.v1').append("svg")
                 .attr("width",600)
                 .attr("height",230);
-
-                data = [12,19,11,13,12,22,13,4,15,16,18,19,20,12,11,9];
-                sorteddata = data.sort(d3.ascending);
-                console.log(sorteddata);
-                var q1 = d3.quantile(sorteddata,0.25);
-                var q2 = d3.quantile(sorteddata,0.5);
-                var q3 = d3.quantile(sorteddata,0.75);
-
-                var min = d3.min(data);
-                var max = d3.max(data);
-
-
-                var y = d3.scaleLinear()
-                .domain([0,d3.max(data)])
-                .range([200,0]);
-
-
-                boxplot.append("g")
-                .attr("transform",
-                    "translate(" + 20 + "," + 10 + ")")
-                    .call(d3.axisLeft(y))
                 
-				var label = ["A","B", "C","D"];
-				
-                var x = d3.scalePoint()                   
-                    .domain(label)
-                    .range([ 0, 200 ]);
+                //Read CSV for data "boxplot.csv"
+                d3.csv("boxplot.csv").then(function(boxData) {
+                    let labels = ["A","B","C","D"];
+                    let columns = labels.map(label => boxData.map(d => +d[label])); //converts strings to numbers
+                
+                    // Define Scales
+                    let y = d3.scaleLinear()
+                        .domain([0,d3.max(columns.flat())])
+                        .range([200,0]);
+                    
+                    let x = d3.scalePoint()
+                        .domain(labels)
+                        .range([0,200]);
+                    
+                    // Add Y-axis
+                    boxplot.append("g")
+                        .attr("transform", "translate(" + 20 + "," + 10 + ")")
+                        .call(d3.axisLeft(y));
 
-                boxplot.append("g")
-                .attr("transform",
-                    "translate(" + (50+20) + "," + 210 + ")")
-                    .call(d3.axisBottom(x))
+                    // Add X-axis
+                    boxplot.append("g")
+                        .attr("transform", "translate(" + (50+20) + "," + 210 + ")")
+                        .call(d3.axisBottom(x));
 
-			for(i=0; i<4; i++){
-                boxplot.append("line")
-                .attr("x1",x(label[i])+50+20)
-                .attr("y1",y(min))
-                .attr("x2",x(label[i])+50+20)
-                .attr("y2",y(max))
-                .attr("stroke","black");
-                 
-                boxplot.append("rect")
-                .attr("x",x(label[i])+50+20-20)
-                .attr("y",y(q3))
-                .attr("width",40)
-                .attr("height",y(q1)-y(q3))
-                .attr("stroke","black")
-                .attr("fill","red");
+                    // Draw box plot for each column
+                    columns.forEach((dataset, i) => {
 
-                boxplot.append("line")
-                .attr("x1",x(label[i])+50+20-20)
-                .attr("y1",y(q2))
-                .attr("x2",x(label[i])+50+20+20)
-                .attr("y2",y(q2))
-                .attr("stroke","black");
-			}
-			
+                        dataset.sort(d3.ascending);
+                        let q1 = d3.quantile(dataset, 0.25);
+                        let q2 = d3.quantile(dataset,0.5);
+                        let q3 = d3.quantile(dataset,0.75);        
+                    
+                        let min = d3.min(dataset);
+                        let max = d3.max(dataset);
+                        
+                        console.log("Column data",dataset,"min",min,"25th",q1,"50th",q2,"75th",q3,"max",max);
+                        
+                        boxplot.append("line")
+                            .attr("x1",x(labels[i])+50+20)
+                            .attr("y1",y(min))
+                            .attr("x2",x(labels[i])+50+20)
+                            .attr("y2",y(max))
+                            .attr("stroke","black");
+                        
+                        boxplot.append("rect")
+                            .attr("x",x(labels[i])+50+20-20)
+                            .attr("y",y(q3))
+                            .attr("width",40)
+                            .attr("height",y(q1)-y(q3))
+                            .attr("stroke","black")
+                            .attr("fill","red");
+
+                        boxplot.append("line")
+                            .attr("x1",x(labels[i])+50+20-20)
+                            .attr("y1",y(q2))
+                            .attr("x2",x(labels[i])+50+20+20)
+                            .attr("y2",y(q2))
+                            .attr("stroke","black");
+                    })
+
+                });
+		
             </script>
         </div>
         
