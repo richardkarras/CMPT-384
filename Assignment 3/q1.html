@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Bar Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .bar.excellent {
+            fill: purple;
+        }
+        .bar.good {
+            fill: lightpurple;
+        }
+        .bar.fair {
+            fill: pink;
+        }
+        .bar.poor {
+            fill: peach;
+        }
+        .bar.verypoor {
+            fill: yellow;
+        }
+        .axis-label {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <svg width="800" height="400"></svg>
+    <script>
+        // Set the dimensions and margins of the graph
+        const margin = {top: 20, right: 30, bottom: 40, left: 90},
+              width = 800 - margin.left - margin.right,
+              height = 400 - margin.top - margin.bottom;
+
+        // Append the svg object to the body of the page
+        const svg = d3.select("svg")
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Parse the Data
+        d3.csv("conditions-canola-july-7-2024.csv").then(function(data) {
+
+            // Process the data to stack the values
+            const subgroups = ["excellent", "good", "fair", "poor", "verypoor"];
+            const stackedData = d3.stack()
+                .keys(subgroups)
+                (data);
+
+            // Add X axis
+            const x = d3.scaleLinear()
+                .domain([0, d3.max(data, d => +d.excellent + +d.good + +d.fair + +d.poor + +d.verypoor)])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("class", "axis-label");
+
+            // Y axis
+            const y = d3.scaleBand()
+                .range([0, height])
+                .domain(data.map(d => d.name))
+                .padding(.1);
+            svg.append("g")
+                .call(d3.axisLeft(y))
+                .selectAll("text")
+                .attr("class", "axis-label");
+
+            // Bars
+            svg.append("g")
+                .selectAll("g")
+                .data(stackedData)
+                .enter().append("g")
+                .attr("class", d => "bar " + d.key)
+                .selectAll("rect")
+                .data(d => d)
+                .enter().append("rect")
+                .attr("y", d => y(d.data.name))
+                .attr("x", d => x(d[0]))
+                .attr("width", d => x(d[1]) - x(d[0]))
+                .attr("height", y.bandwidth());
+        });
+    </script>
+</body>
+</html>
