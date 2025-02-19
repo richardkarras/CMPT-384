@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 2 - Dynamic Chart D3 Scales</title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        button,
+        svg {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+
+</head>
+
+<body>
+    <button id='horizontal-button'>Horizontal</button>
+    <button id='vertical-button'>Vertical</button>
+</body>
+
+<script type="text/javascript">
+    var w = 600;
+    var h = 600;
+    var barPadding = 1;
+    var color_max = 255;
+    data_length = 25;
+
+    function getRandomData(length) {
+        //  range creates a simple array like this [0,1,2,3 ......, length-1 ]
+        var number_array = d3.range(length);
+
+        // map is used to modify an existing array , the value returned by the function
+        // in map replaces the value in the array , this repeats for each value in the array
+        var random_number_array = number_array.map(function() {
+            // Math the random return a decimal value between 0 to 1 
+            // we convert it to a round number by multiplying by 10 
+            // so 0.34 becomes 3.4 and is rounded to 3
+            return Math.round(Math.random() * 10);
+        });
+        return random_number_array;
+    }
+
+    // get a random data array and store in dataset
+    var dataset = getRandomData(data_length);
+
+
+    var xScale = d3.scaleLinear()
+        .domain([0, data_length - 1])
+        .range([0, w]);
+
+    var yScale = d3.scaleLinear()
+        .domain([d3.min(dataset), d3.max(dataset)])
+        .range([20, h]);
+
+    var colorScale = d3.scaleLinear()
+        .domain([d3.min(dataset), d3.max(dataset)])
+        // 0 to 255 in Decimal System is 00 to FF in Hexadecimal System
+        .range([0, 255]);
+
+
+
+    //Create SVG element 
+    var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
+
+    svg.selectAll("rect").data(dataset).enter().append("rect")
+        .attr("x", function(d, i) {
+            return xScale(i);
+        }).attr("y", function(d) {
+            return h - yScale(d);
+        }) //move away from top 	
+        .attr("width", w / dataset.length)
+        .attr("height", function(d) {
+            return yScale(d);
+        })
+        .attr("fill", function(d) {
+            return "rgb(" + colorScale(d) + ",0,0)";
+        })
+        .on('mouseover', function() {
+            d3.select(this).transition().duration(500).ease(d3.easeLinear)
+                .attr('fill', function(d) {
+                    return "rgb(0,0," + colorScale(d) + ")";
+                });
+        })
+        .on('mouseout', function() {
+            d3.select(this).transition().duration(500).ease(d3.easeLinear)
+                .attr("fill", function(d) {
+                    return "rgb(" + colorScale(d) + ",0,0)";
+                });
+        })
+
+
+    //On click, update with new data 
+    d3.select("#vertical-button")
+        .on("click", function() {
+            svg.selectAll("rect")
+                .data(dataset)
+                .transition()
+                .duration(1000)
+                .ease(d3.easeLinear)
+                .attr("y", function(d, i) {
+                    return xScale(i);
+                }).attr("x", function(d) {
+                    return h - yScale(d);
+                }) //move away from top 	
+                .attr("height", w / dataset.length)
+                .attr("width", function(d) {
+                    return yScale(d);
+                })
+
+        });
+
+    //On click, update with new data 
+    d3.select("#horizontal-button")
+        .on("click", function() {
+            svg.selectAll("rect")
+                .data(dataset)
+                .transition()
+                .duration(1000)
+                .ease(d3.easeLinear)
+                .attr("x", function(d, i) {
+                    return xScale(i);
+                }).attr("y", function(d) {
+                    return h - yScale(d);
+                }) //move away from top 	
+                .attr("width", w / dataset.length)
+                .attr("height", function(d) {
+                    return yScale(d);
+                })
+        });
+</script>
+
+</html>
