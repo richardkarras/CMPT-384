@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Canola Condition</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .bar rect {
+            stroke-width: 2;
+        }
+        .axis text {
+            font-size: 12px;
+        }
+        .legend text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chart"></div>
+
+<script>
+// Set dimensions and margins for the graph
+const margin = {top: 40, right: 30, bottom: 40, left: 100},
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+// Append SVG object to the body of the page
+const svg = d3.select("#chart")
+              .append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Parse the Data
+d3.csv("conditions-canola-july-7-2024.csv").then(function(data) {
+
+    // Process data to get the required format
+    const formattedData = Array.from(
+        d3.group(data.map(d => ({
+            Region: d.Region,
+            Condition: d.Condition,
+            Canola: +d.Canola
+        })), d => d.Region),
+        ([key, values]) => ({
+            Region: key,
+            values: values.reduce((acc, cur) => {
+                acc[cur.Condition] = cur.Canola;
+                return acc;
+            }, {})
+        })
+    );
+
+    console.log(formattedData);
+
+    // List of subgroups (conditions)
+    const subgroups = Array.from(new Set(data.map(d => d.Condition)));
+
+    console.log(subgroups);
+
+    // List of groups (regions)
+    const groups = formattedData.map(d => d.Region);
+
+    console.log(groups);
+
+    // Add X axis
+    const x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width]);
+    
+    svg.append("g")
+       .attr("transform", `translate(0, ${height})`)
+       .call(d3.axisBottom(x).ticks(5));
+
+    // Add Y axis
+    const y = d3.scaleBand()
+                .domain(groups)
+                .range([0, height])
+                .padding(0.1);
+    
+    svg.append("g")
+       .call(d3.axisLeft(y));
+
+    // Color palette
+    const color = d3.scaleOrdinal()
+                    .domain(subgroups)
+                    .range(["#6a51a3", "#9e9ac8", "#cbc9e2", "#fdae6b", "#e6550d"]);
+
+    // Show the bars
+    svg.selectAll("g.layer")
+       .data(formattedData)
+       .enter().append("g")
+       .attr("class", "layer")
+       .attr("fill", d => color(d.Condition))
+       .selectAll("rect")
+       .data(d => subgroups.map(key => ({key: key, value: d.values[key] || 0, Region: d.Region})))
+       .enter().append("rect")
+       .attr("y", d => y(d.Region))
+       .attr("x", d => x(d3.sum(subgroups.slice(0, subgroups.indexOf(d.key)).map(key => d.values[key] || 0))))
+       .attr("width", d => x(d.value))
+       .attr("height", y.bandwidth());
+
+    // Add legend
+    const legend = svg.append("g")
+                      .attr("transform", `translate(${width - 100}, 0)`);
+
+    subgroups.forEach((key, i) => {
+        const legendRow = legend.append("g")
+                                .attr("transform", `translate(0, ${i * 20})`);
+        
+        legendRow.append("rect")
+                 .attr("width", 10)
+                 .attr("height", 10)
+                 .attr("fill", color(key));
+        
+        legendRow.append("text")
+                 .attr("x", 20)
+                 .attr("y", 10)
+                 .attr("text-anchor", "start")
+                 .style("text-transform", "capitalize")
+                 .text(key);
+    });
+});
+</script>
+
+</body>
+</html>

@@ -13,7 +13,7 @@
 
 <script type="text/javascript">
     var w = 500;
-    var h = 100;
+    var h = 500;
     var barPadding = 1;
     var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
 
@@ -30,11 +30,11 @@
             return i * (w / dataset.length);
         })
         .attr("y", function (d) {
-            return h - (d * 4);
+            return h - (d * 20);
         })
         .attr("width", w / dataset.length - barPadding)
         .attr("height", function (d) {
-            return d * 4;
+            return d * 20;
         })
         .attr("fill", function (d) {
             return "rgb(0,0," + d * 10 + ")";

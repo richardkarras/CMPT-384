@@ -1,0 +1,7 @@
+source: https://www.cambridge.org/core/journals/antiquity/article/bogs-bones-and-bodies-the-deposition-of-human-remains-in-northern-european-mires-9000-bcad-1900/B90A16A211894CB87906A7BCFC0B2FC7#supplementary-materials
+
+Methodology:
+
+The data for this visualization was downloaded from the source above, and
+then grouped by Bog Body Type and totalled in R.
+
