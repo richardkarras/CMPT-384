@@ -1,0 +1,25 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-tile-layer": "./my-tile-layer.plugin.js",
+    "my-geosjon-layer": "./my-geojson-layer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-tile-layer",
+      "container": "",
+      "props": {
+        "layerName": "OpenStreetMap",
+        "layerType": "base-layer",
+        "active": true,
+        "urlTemplate": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "options": {
+          "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+        }
+      }
+    }
+  ]
+}

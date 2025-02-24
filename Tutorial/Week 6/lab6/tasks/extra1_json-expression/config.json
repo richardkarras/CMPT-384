@@ -1,0 +1,59 @@
+{
+    "view": {
+        "center": [0, 0],
+        "zoom": 3
+    },
+    "imports": {
+        "expr": "./expr.plugin.js"
+    },
+    "plugins": [
+        {
+            "import": "expr",
+            "container": "sidebar",
+            "props": {
+                "expr": [
+                    "$",
+                    [
+                        "def",
+                        "factorial",
+                        [
+                            "cond",
+                            ["eq", ["args", 0], 0],
+                            1,
+                            true,
+                            [
+                                "mul",
+                                ["args", 0],
+                                ["factorial", ["sub", ["args", 0], 1]]
+                            ]
+                        ]
+                    ],
+                    [
+                        "def",
+                        "fibonacci",
+                        [
+                            "cond",
+                            ["eq", ["args", 0], 0],
+                            0,
+                            ["eq", ["args", 0], 1],
+                            1,
+                            true,
+                            [
+                                "add",
+                                ["fibonacci", ["sub", ["args", 0], 1]],
+                                ["fibonacci", ["sub", ["args", 0], 2]]
+                            ]
+                        ]
+                    ],
+                    [
+                        "`",
+                        {
+                            "factorial_of_v1": ["factorial", ["v1"]],
+                            "fibonacci_of_v2": ["fibonacci", ["v2"]]
+                        }
+                    ]
+                ]
+            }
+        }
+    ]
+}

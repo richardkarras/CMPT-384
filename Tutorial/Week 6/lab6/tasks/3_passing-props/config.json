@@ -1,0 +1,24 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-better-tile-layer": "./my-better-tile-layer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-better-tile-layer",
+      "container": "sidebar",
+      "props": {
+        "layerName": "World_Imagery",
+        "layerType": "base-layer",
+        "active": true,
+        "urlTemplate": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        "options": {
+          "attribution": "Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
+        }
+      }
+    }
+  ]
+}

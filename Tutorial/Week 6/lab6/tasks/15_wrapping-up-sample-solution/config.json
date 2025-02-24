@@ -1,0 +1,61 @@
+{
+    "view": {
+        "center": [0, 0],
+        "zoom": 3
+    },
+    "favicon": "https://vga-team.github.io/app/icons/vga-512x512.png",
+    "pageTitle": "My VGA Dashboard",
+    "accessLocalFiles": true,
+    "imports": {
+        "provider": "./provider.plugin.js",
+        "tile-layer": "./tile-layer.plugin.js",
+        "geosjon-layer": "./geojson-layer.plugin.js",
+        "metadata": "./metadata.plugin.js"
+    },
+    "plugins": [
+        {
+            "import": "provider",
+            "container": ""
+        },
+        {
+            "import": "tile-layer",
+            "container": "",
+            "props": {
+                "layerName": "World_Imagery",
+                "layerType": "base-layer",
+                "active": true,
+                "urlTemplate": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                "options": {
+                    "attribution": "Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
+                }
+            }
+        },
+        {
+            "import": "tile-layer",
+            "container": "",
+            "props": {
+                "layerName": "World_Physical_Map",
+                "layerType": "base-layer",
+                "active": false,
+                "urlTemplate": "https://server.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+                "options": {
+                    "attribution": "Source: US National Park Service"
+                }
+            }
+        },
+        {
+            "import": "geosjon-layer",
+            "container": "",
+            "props": {
+                "layerName": "GeoJSON",
+                "layerType": "overlay",
+                "active": true,
+                "fileName": "foo.geojson"
+            }
+        },
+        {
+            "import": "metadata",
+            "container": "sidebar"
+        }
+    ]
+}

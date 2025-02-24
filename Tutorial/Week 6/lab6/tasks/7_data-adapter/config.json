@@ -1,0 +1,20 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "data-provider": "./provider.plugin.js",
+    "data-consumer": "./consumer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "data-provider",
+      "container": "sidebar"
+    },
+    {
+      "import": "data-consumer",
+      "container": "sidebar"
+    }
+  ]
+}

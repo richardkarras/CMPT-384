@@ -1,0 +1,15 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "chart": "./chart.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "chart",
+      "container": "sidebar"
+    }
+  ]
+}

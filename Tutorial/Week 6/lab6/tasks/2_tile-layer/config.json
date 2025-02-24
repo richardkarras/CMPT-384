@@ -1,0 +1,15 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-tile-layer": "./my-tile-layer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-tile-layer",
+      "container": "sidebar"
+    }
+  ]
+}

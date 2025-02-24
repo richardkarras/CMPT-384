@@ -1,0 +1,15 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-first-plugin": "./my-first.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-first-plugin",
+      "container": "sidebar"
+    }
+  ]
+}
