@@ -1,0 +1,16 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "accessLocalFiles": true,
+  "imports": {
+    "foo": "./foo.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "foo",
+      "container": "sidebar"
+    }
+  ]
+}

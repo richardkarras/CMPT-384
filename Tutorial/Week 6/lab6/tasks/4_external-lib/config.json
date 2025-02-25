@@ -1,0 +1,18 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "markdown": "./markdown.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "markdown",
+      "container": "sidebar",
+      "props":{
+        "myurl": "./README.md"
+      }
+    }
+  ]
+}

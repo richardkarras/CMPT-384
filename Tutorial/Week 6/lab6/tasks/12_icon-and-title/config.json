@@ -1,0 +1,8 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "favicon": "https://vga-team.github.io/app/icons/vga-512x512.png",
+  "pageTitle": "The Overrided Title"
+}

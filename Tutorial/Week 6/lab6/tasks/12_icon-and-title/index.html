@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <base href="." />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon"></link>
+    <title>VGA Plugin Examples</title>
+    <script type="module" src="../../lib/vga-core.js"></script>
+    <script type="module" defer>
+      const visHost = document.querySelector("vga-core");
+      const config = await fetch("./config.json").then((response) =>
+        response.json()
+      );
+      visHost.config = config;
+    </script>
+  </head>
+  <body>
+    <!-- `allow-modifying-page-info` attr enables the ability of using the config file to override the page's icon and title -->
+    <vga-core allow-modifying-page-info></vga-core>
+  </body>
+</html>

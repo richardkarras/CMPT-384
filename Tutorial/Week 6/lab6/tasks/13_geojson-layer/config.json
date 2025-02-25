@@ -1,0 +1,20 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-geosjon-layer": "./my-geojson-layer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-geosjon-layer",
+      "container": "",
+      "props": {
+        "layerName": "GeoJSON",
+        "layerType": "base-layer",
+        "active": true
+      }
+    }
+  ]
+}
