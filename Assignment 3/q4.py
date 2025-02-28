@@ -1,6 +1,7 @@
 import numpy as np
 import vtk
-def create_some_vti(vti_file, dimensions):
+
+def create_some_vti(vti_file, csv_file, dimensions):
     # Generate some data
     data_array = np.random.rand(*dimensions)
     
@@ -51,11 +52,12 @@ def create_some_vti(vti_file, dimensions):
                 for k in range(dimensions[2]):
                     temp_value = vtk_data_array1.GetTuple1(i * dimensions[1] * dimensions[2] + j * dimensions[2] + k)
                     humidity_value = vtk_data_array2.GetTuple1(i * dimensions[1] * dimensions[2] + j * dimensions[2] + k)
-                    f.write(f"{i},{j},{k},{temp_value},{humidity_value}\n")
+                    if 30 <= humidity_value <= 85.5:
+                        f.write(f"{i},{j},{k},{temp_value},{humidity_value}\n")
  
 # Example usage
 vti_file = 'data.vti'
 csv_file = 'data.csv'
 numDim = 10
 dimensions = (numDim, numDim, numDim) # Example dimensions for the data
-create_some_vti(vti_file, dimensions)
+create_some_vti(vti_file, csv_file, dimensions)

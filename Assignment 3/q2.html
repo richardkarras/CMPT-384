@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 2 - D3 Map of Saskatchewan</title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+</body>
+<script type="text/javascript">
+    //Width and height
+    var w = 1000;
+    var h = 600;
+
+    //Define map projection
+    var projection = d3.geoMercator()
+        .center([-106, 54]) // Center the map on Saskatchewan
+        .translate([w / 2, h / 2])
+        .scale([2000]);
+
+    //Define path generator
+    var path = d3.geoPath()
+        .projection(projection);
+
+    //Create SVG element
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    //Load in GeoJSON data
+    d3.json("q2.json").then(function (json) {
+        //Bind data and create one path per GeoJSON feature
+        svg.selectAll("path")
+            .data(json.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+        
+        var featureXYbounds = [];
+        json.features.forEach(function (d) {
+            console.log(d.properties.name);
+            var feat = d.properties.name;
+            var coordinates = d.geometry.coordinates[0];
+            var xCoords = coordinates.map(function (coord) { return coord[0]; });
+            var yCoords = coordinates.map(function (coord) { return coord[1]; });
+            var xMin = d3.min(xCoords);
+            var xMax = d3.max(xCoords);
+            var yMin = d3.min(yCoords);
+            var yMax = d3.max(yCoords);
+            featureXYbounds.push({feature: feat, xMin: xMin, xMax: xMax, yMin: yMin, yMax: yMax });
+            console.log({feature: feat, xMin: xMin, xMax: xMax, yMin: yMin, yMax: yMax });
+        })
+        var seSum = 0;
+        var swSum = 0;
+        var ecSum = 0;
+        var wcSum = 0; 
+        var neSum = 0;
+        var nwSum = 0;
+        // Load in CSV data
+        d3.csv("conditions-canola-july-7-2024.csv").then(function (data) {
+            // Create a map to store the sum of fair, good, and excellent values for each region
+            var regionData = {};
+            data.forEach(function (d) {
+                console.log(d.Region,d.Condition,)
+                var region = d.Region;
+                var condition = d.Condition;
+                if (condition === "Fair" || condition === "Good" || condition === "Excellent") {
+                    switch (region) {
+                        case "South East":
+                            seSum += +d.Canola;
+                            break;
+                        case "South West":
+                            swSum += +d.Canola;
+                            break;
+                        case "East Central":
+                            ecSum += +d.Canola;
+                            break;
+                        case "West Central":
+                            wcSum += +d.Canola;
+                            break;
+                        case "North East":
+                            neSum += +d.Canola;
+                            break;
+                        case "North West":
+                            nwSum += +d.Canola;
+                            break;
+                    }
+                }
+            });
+        
+        console.log(seSum,swSum,ecSum,wcSum,neSum,nwSum);
+        
+        // Add circles to the map
+        svg.selectAll("circle")
+            .data(json.features)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d) {
+            var region = d.properties.name;
+            var xMin, xMax;
+            switch (region) {
+                case "South East":
+                xMax = featureXYbounds.find(f => f.feature === "South East").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "South East").xMin;
+                break;
+                case "South West":
+                xMax = featureXYbounds.find(f => f.feature === "South West").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "South West").xMin;
+                break;
+                case "East Central":
+                xMax = featureXYbounds.find(f => f.feature === "East Central").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "East Central").xMin;
+                break;
+                case "West Central":
+                xMax = featureXYbounds.find(f => f.feature === "West Central").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "West Central").xMin;
+                break;
+                case "North East":
+                xMax = featureXYbounds.find(f => f.feature === "North East").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "North East").xMin;
+                break;
+                case "North West":
+                xMax = featureXYbounds.find(f => f.feature === "North West").xMax;
+                xMin = featureXYbounds.find(f => f.feature === "North West").xMin;
+                break;
+            }
+            return projection([(xMax + xMin) / 2, 0])[0];
+            })
+            .attr("cy", function (d) {
+            var region = d.properties.name;
+            var yMin, yMax;
+            switch (region) {
+                case "South East":
+                yMax = featureXYbounds.find(f => f.feature === "South East").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "South East").yMin;
+                break;
+                case "South West":
+                yMax = featureXYbounds.find(f => f.feature === "South West").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "South West").yMin;
+                break;
+                case "East Central":
+                yMax = featureXYbounds.find(f => f.feature === "East Central").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "East Central").yMin;
+                break;
+                case "West Central":
+                yMax = featureXYbounds.find(f => f.feature === "West Central").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "West Central").yMin;
+                break;
+                case "North East":
+                yMax = featureXYbounds.find(f => f.feature === "North East").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "North East").yMin;
+                break;
+                case "North West":
+                yMax = featureXYbounds.find(f => f.feature === "North West").yMax;
+                yMin = featureXYbounds.find(f => f.feature === "North West").yMin;
+                break;
+            }
+            return projection([0, (yMax + yMin) / 2])[1];
+            })
+            .attr("r", function (d) {
+            var region = d.properties.name; // Assuming the region name is stored in properties.name
+            switch (region) {
+                case "South East":
+                return seSum * 10;
+                case "South West":
+                return swSum * 10;
+                case "East Central":
+                return ecSum * 10;
+                case "West Central":
+                return wcSum * 10;
+                case "North East":
+                return neSum * 10;
+                case "North West":
+                return nwSum * 10;
+                default:
+                return 1;
+            }
+            })
+            .attr("fill", "red")
+            .attr("opacity", 0.6)
+            .append("title")
+            .text(function (d) {
+            var region = d.properties.name;
+            var r;
+            switch (region) {
+                case "South East":
+                r = seSum * 10;
+                break;
+                case "South West":
+                r = swSum * 10;
+                break;
+                case "East Central":
+                r = ecSum * 10;
+                break;
+                case "West Central":
+                r = wcSum * 10;
+                break;
+                case "North East":
+                r = neSum * 10;
+                break;
+                case "North West":
+                r = nwSum * 10;
+                break;
+                default:
+                r = 1;
+            }
+            return "% Fair, Good and Excellent = " + r * 10;
+            });
+        });
+    });
+</script>
+
+</html>
