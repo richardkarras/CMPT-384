@@ -1,0 +1,24 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "one": "./one.plugin.js",
+    "two": "./two.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "one",
+      "container": "sidebar"
+    },
+    {
+      "import": "one",
+      "container": "sidebar"
+    },
+    {
+      "import": "two",
+      "container": "sidebar"
+    }
+  ]
+}

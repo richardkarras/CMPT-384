@@ -1,0 +1,63 @@
+{
+  "view": {
+    "center": [0, 0],
+    "zoom": 3
+  },
+  "imports": {
+    "my-geojson-layer": "./my-geojson-layer.plugin.js"
+  },
+  "plugins": [
+    {
+      "import": "my-geojson-layer",
+      "container": "sidebar",
+      "props": {
+        "layerName": "GeoJSON",
+        "layerType": "base-layer",
+        "active": true,
+        "geojson": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {
+                "id": 1,
+                "description": "This is the first feature"
+              },
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-132.28956123183815, 66.79321488278092],
+                    [-132.28956123183815, 54.00963421298252],
+                    [-112.22676659883098, 54.00963421298252],
+                    [-112.22676659883098, 66.79321488278092],
+                    [-132.28956123183815, 66.79321488278092]
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "id": 2,
+                "description": "This is the second feature"
+              },
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-101.48893285158782, 63.344269594477055],
+                    [-101.48893285158782, 51.089994270256994],
+                    [-71.53602818822567, 51.089994270256994],
+                    [-71.53602818822567, 63.344269594477055],
+                    [-101.48893285158782, 63.344269594477055]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
