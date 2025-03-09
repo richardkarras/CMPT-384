@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://d3js.org/d3.v7.min.js">
+        </script>
+    </head>
+<body>
+<div class="networkVis">
+    <p>Gemstone Trade Transactions Between Countries</p>
+    <script>
+        const svgWidth = 1200;
+        const svgHeight = 800;
+        const margins = {"top": 10, "bottom": 10, "left": 10, "right": 10};
+        const cNodeR = 3;
+        var canvas = d3.selectAll('div.networkVis')
+            .append("svg") // Create an SVG container
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
+
+        // Function to visualize the data
+        // function viz(countryNodes, exports) {
+
+        //     Draw gemstone exports
+        //     canvas.selectAll('line')
+        //         .data(exports) // Bind data
+        //         .enter()
+        //         .append('line')
+        //         .attr("x1", function(d) {
+        //             const expCountryNode = countryNodes.find(c => c.countryName === d.expCountry);
+        //             console.log(expCountryNode);
+        //             return expCountryNode.Longitude * longScale; // Center of the column
+        //         })
+        //         .attr("y1", function(d) {
+        //             const expCountryNode = countryNodes.find(c => c.countryName === d.expCountry);
+        //             return expCountryNode.Latitude * latScale; // Center of the row
+        //         })
+        //         .attr("x2", function(d) {
+        //             const impCountryNode = countryNodes.find(c => c.countryName === d.impCountry);
+        //             return impCountryNode.Longitude * longScale; // Center of the column
+        //         })
+        //         .attr("y2", function(d) {
+        //             const impCountryNode = countryNodes.find(c => c.countryName === d.impCountry);
+        //             return impCountryNode.Latitude * latScale; // Center of the row
+        //         })
+        //         .attr("opacity", function(d) {
+                    
+        //     });
+
+        // }
+
+        //Import CSV data
+        d3.csv("Country_List.csv").then(function(countryList) {
+            // load countries to create plot of country nodes
+            const cNodes = countryList.map(d => ({
+                countryName: d.Alpha3,
+                countryId: +d.Numeric,
+                Latitude: +d.Latitude,
+                Longitude: +d.Longitude
+            }));
+            
+            //Max and min values for lat and long
+            const maxLat = d3.max(cNodes, d => d.Latitude);
+            const dMaLat = maxLat + 180; //relative to South Pole
+            const minLat = d3.min(cNodes, d => d.Latitude);
+            const dMiLat = minLat + 180; //relative to South Pole
+            const maxLong = d3.max(cNodes, d => d.Longitude);
+            const dMaLong = maxLong + 180; //relative to date line
+            const minLong = d3.min(cNodes, d => d.Longitude);
+            const dMiLong = minLong + 180; //relative to date line
+            
+            // Scale Lat and Long to SVG area
+            const latScale = d3.scaleLinear()
+                .domain([minLat, maxLat]) // actual latitude values
+                .range([svgHeight - margins.top, margins.bottom]);
+
+            const longScale = d3.scaleLinear()
+                .domain([minLong, maxLong]) // actual longitude values
+                .range([margins.left, svgWidth - margins.right]);
+                      
+            //Import transaction csv
+                d3.csv("gemstone15.csv").then(function(gemstone) {
+                // load gemstone sales
+                const gemstoneTransactions = gemstone.map(d => {
+                    const expCountryNode = cNodes.find(c => c.countryName === d.Exporter);
+                    const impCountryNode = cNodes.find(c => c.countryName === d.Importer);
+                    return {
+                        exporter: d.Exporter,
+                        importer: d.Importer,
+                        value: +d.Value,
+                        latExp: expCountryNode.Latitude,
+                        longExp: expCountryNode.Longitude,
+                        latImp: impCountryNode.Latitude,
+                        longImp: impCountryNode.Longitude
+                    };
+                });
+
+                //Sum values of each exporter/importer pair
+                const exports = Object.values(gemstoneTransactions.reduce((acc, curr) => {
+                    const key = `${curr.exporter}-${curr.importer}`;
+                    if (!acc[key]) {
+                        acc[key] = { expCountry: curr.exporter, impCountry: curr.importer, value: 0, latExp: curr.latExp, longExp: curr.longExp, latImp: curr.latImp, longImp: curr.longImp };
+                    }
+                    acc[key].value += curr.value;
+                    return acc;
+                }, {}));
+
+                //Max and min values for opacity settings
+                const maxValue = d3.max(exports, d => d.value);
+                const minValue = d3.min(exports, d => d.value);
+                console.log("Max value: ",maxValue, "Min value: ",minValue);
+                //Scale opacity by summed transaction value
+                const valScale = d3.scaleLog()
+                    .domain([minValue, maxValue])
+                    .range([0.05, .25]);
+                
+                // Draw country nodes
+                // Tooltip div
+                const tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("visibility", "hidden")
+                    .style("background-color", "white")
+                    .style("border", "1px solid black")
+                    .style("padding", "10px");
+
+                let activeCircle = null;
+
+                canvas.selectAll('circle')
+                    .data(cNodes)
+                    .enter()
+                    .append('circle')
+                    .attr("cx", function(d) {
+                        const cx = longScale(d.Longitude);
+                        return cx;
+                    })
+                    .attr("cy", function(d) {
+                        const cy = latScale(d.Latitude);
+                        return cy;
+                    })
+                    .attr("r", cNodeR)
+                    .attr("fill", "red") // Circle color
+                    .on("mouseover", function(event, d) {
+                        if (activeCircle !== this) {
+                            canvas.selectAll('line')
+                                .attr("opacity", function(lineData) {
+                                    return (lineData.expCountry === d.countryName || lineData.impCountry === d.countryName) ? valScale(lineData.value) + 0.25 : 0.01;
+                                });
+                        }
+                    })
+                    .on("mouseout", function() {
+                        if (activeCircle !== this) {
+                            canvas.selectAll('line')
+                                .attr("opacity", function(lineData) {
+                                    return valScale(lineData.value);
+                                });
+                        }
+                    })
+                    .on("click", function(event, d) {
+                        if (activeCircle === this) {
+                            tooltip.style("visibility", "hidden");
+                            activeCircle = null;
+                            canvas.selectAll('line')
+                                .attr("opacity", function(lineData) {
+                                    return valScale(lineData.value);
+                                });
+                        } else {
+                            activeCircle = this;
+                            const exportsList = exports.filter(t => t.expCountry === d.countryName);
+                            const importsList = exports.filter(t => t.impCountry === d.countryName);
+                            let tooltipHtml = `<h1>${d.countryName}</h1><br><table><tr><th>Export to Country</th><th>Export Value</th></tr>`;
+                            exportsList.forEach(exp => {
+                                tooltipHtml += `<tr><td>${exp.impCountry}</td><td>${exp.value}</td></tr>`;
+                            });
+                            tooltipHtml += `<tr><th>Import from Country</th><th>Import Value</th></tr>`;
+                            importsList.forEach(imp => {
+                                tooltipHtml += `<tr><td>${imp.expCountry}</td><td>${imp.value}</td></tr>`;
+                            });
+                            tooltipHtml += `</table>`;
+                            tooltip.html(tooltipHtml)
+                                .style("left", (event.pageX + 10) + "px")
+                                .style("top", (event.pageY - 28) + "px")
+                                .style("visibility", "visible");
+
+                            canvas.selectAll('line')
+                                .attr("opacity", function(lineData) {
+                                    return (lineData.expCountry === d.countryName || lineData.impCountry === d.countryName) ? valScale(lineData.value) + 0.25 : 0.01;
+                                });
+                        }
+                    });
+
+                // Hide tooltip when clicking outside any circle
+                d3.select("body").on("click", function(event) {
+                    if (activeCircle && !d3.select(event.target).node().closest('circle')) {
+                        tooltip.style("visibility", "hidden");
+                        activeCircle = null;
+                        canvas.selectAll('line')
+                            .attr("opacity", function(lineData) {
+                                return valScale(lineData.value);
+                            });
+                    }
+                });
+
+                // Draw gemstone exports
+                // x1, y1: Exporter Longitude and Latitude
+                // x2, y2: Importer Longitude and Latitude
+                canvas.selectAll('line')
+                    .data(exports) // Bind data
+                    .enter()
+                    .append('line')
+                    .attr("x1", function(d) {
+                        return longScale(d.longExp); // Exporter's longitude
+                    })
+                    .attr("y1", function(d) {
+                        return latScale(d.latExp); // Exporter's latitude
+                    })
+                    .attr("x2", function(d) {
+                        return longScale(d.longImp); // Importer's longitude
+                    })
+                    .attr("y2", function(d) {
+                        return latScale(d.latImp); // Importer's latitude
+                    })
+                    .attr("stroke-width", "1px")
+                    .attr("stroke", "blue")
+                    .attr("opacity", function(d) {
+                        return valScale(d.value);
+                    });
+
+            //Console outputs for debugging
+
+            })
+        })
+    </script>
+</div>
+</body>
+</html>

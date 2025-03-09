@@ -1,15 +1,26 @@
 {
   "view": {
-    "center": [0, 0],
-    "zoom": 3
+    "center": [52.12, -106.7],
+    "zoom": 12
   },
   "imports": {
-    "chart": "./chart.plugin.js"
+    "chart": "./chart.plugin.js",
+    "map": "./map.plugin.js"
   },
   "plugins": [
     {
       "import": "chart",
       "container": "sidebar"
+    }, 
+    {
+      "import": "map",
+      "container": "",
+      "props": {
+          "layerName": "World_Imagery",
+          "layerType": "base-layer",
+          "active": true,
+          "urlTemplate": "https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+      }
     }
   ]
 }

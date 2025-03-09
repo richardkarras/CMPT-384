@@ -89,15 +89,15 @@ export default class extends HTMLElement {
         const geojsonLayer = this.leaflet?.geoJSON(
             geojson,
             // TODO 1: uncomment the following block to set the polygons' styles accroding to the properties
-            // {
-            //     style: (feature) => ({
-            //         color: feature.properties.id > 1 ? "red" : "blue",
-            //     }),
-            // },
+            {
+                style: (feature) => ({
+                    color: feature.properties.id > 1 ? "red" : "blue",
+                }),
+            },
         );
 
         // TODO 2: uncomment the following block to bind Leaflet popups so that when we click on a feature, the popup shows up
-        // geojsonLayer.bindPopup((layer) => layer.feature.properties.description);
+        geojsonLayer.bindPopup((layer) => layer.feature.properties.description);
 
         // TODO 3: try to pass the GeoJSON object from the config file
 
