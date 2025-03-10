@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 1 - D3 Enter Update Exit Pattern </title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        /* When margin is given 2 values then the first value is for top and bottom
+        and the second value is for left and right , in this case there is a margin of 20px on the top
+        , 20px on the bottom and the values for left and right are set by the browser
+        so that the box is center aligned */
+        /* Margin is empty space outside the box and padding is empty space inside the box */
+        
+        svg,
+        button {
+            display: block;
+            margin: 20px auto;
+        }
+        
+        button {
+            padding: 10px;
+            border-radius: 15px;
+            background-color: #4c77b7;
+            font-size: 14px;
+            font-family: sans-serif;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+
+</head>
+
+<body>
+    <button>Randomize Data</button>
+</body>
+
+<script type="text/javascript">
+    // Global variables for width and height of the chart
+    var w = 800;
+    var h = 400;
+
+    // Returns a random number between 1 to 10
+    function getRandomNumber() {
+        // random returns a value in decimal between 0 and 1 , so we multiply it by 10
+        // to get one digit and then ceil the value to the nearest number
+        // so if random returns 0.5688 , it becomes 5.688 after multiplying with 10
+        // and then is ceiled to 6
+        return Math.ceil(Math.random() * 10);
+    }
+
+    // Returns a array having random numbers between 1 to 10
+    function getRandomArray(length) {
+        // create empty array
+        var dataArray = new Array(length);
+        // Fill the content with random numbers 
+        for (var i = 0; i < length; i++) {
+            dataArray[i] = getRandomNumber();
+        }
+        return dataArray;
+    }
+    // You can also try implementing the above function with 
+    // a map function applied to an empty array
+    // for a more d3 way of doing things :-) 
+
+
+    // The main function that creates/updates the visualization 
+    function updateCircles(length) {
+
+        // get a random array and store in variable dataset
+        var dataset = getRandomArray(length);
+
+        // xScale to get the x position of the circles 
+        // evenly distributed in the available width
+        var xScale = d3.scaleLinear()
+            .domain([0, dataset.length - 1])
+            // 50 pixels padding on both sides 
+            .range([50, w - 50]);
+
+        // Size scale so the numbers in range of 1 to 10 are converted  
+        // into range of 10 to 25 pixels for setting radius of the circles
+        var sizeScale = d3.scaleLinear()
+            .domain([d3.min(dataset), d3.max(dataset)])
+            .range([10, 25]);
+
+        // JOIN - Join the data to the circles 
+        var circles = svg.selectAll('circle')
+            .data(dataset);
+
+        // EXIT - Circles that are no longer in the dataset
+        circles
+            .exit()
+            .transition()
+            .duration(500)
+            .attr('r', 0)
+            .attr('cy', h)
+            .remove();
+
+        // UPDATE  - Circles that are in the dataset but have different values
+        circles
+            .transition()
+            .duration(500)
+            .attr('r', function(d) {
+                return sizeScale(d);
+            })
+            .attr("cx", function(d, i) {
+                return xScale(i);
+            })
+            .attr('fill', '#db5c5c')
+
+        // ENTER - New circles that need to be added 
+        circles
+            .enter()
+            .append('circle')
+            .attr("cx", function(d, i) {
+                return xScale(i);
+            })
+            .attr("cy", 0)
+            .attr('fill', '#66db5c')
+            .attr("r", "0")
+            .transition()
+            .duration(500)
+            .attr('r', function(d) {
+                return sizeScale(d);
+            })
+            .attr("cy", h / 2)
+    }
+
+    //Create SVG element 
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    // Call the function the first time for an intial set of 10 circles 
+    // Since all the circles are new , they will be all green
+    updateCircles(10);
+
+    // Attach a click function to the button
+    // Each time the button is clicked we call the updateCircles function
+    // with a random number generated on the fly
+    d3.select('button').on("click", function() {
+        var randomArrayLength = getRandomNumber();
+        updateCircles(randomArrayLength);
+    });
+</script>
+
+</html>

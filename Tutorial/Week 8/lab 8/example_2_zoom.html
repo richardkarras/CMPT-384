@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 2 - D3 Zoom </title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+</body>
+
+<script type="text/javascript">
+    //Width and height
+    var w = 500;
+    var h = 300;
+
+    var attachZoom = d3.zoom().on('zoom', function(d) {
+        d3.select('g').attr('transform', d3.event.transform);
+    });
+
+    //Create SVG element
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+        // create a border around the svg so the user has a reference perspective
+        // when zooming or panning the chart
+        .style('border', '2px solid black')
+        // To the svg attach the zoom function
+        // When a call function is called on an object , the object is passed as an argument
+        // to the function being called , so in this case the object is the svg and the function
+        // being called in the zoom function
+        // so zoom function is attached to the svg
+        .call(attachZoom);
+
+    // We are attaching the zoom to the svg but the actual zooming happens on the inner container 
+    //  this way we dont zoom the actual object we are observing for zoom events
+
+    // Create an inner g element inside the svg
+    // and create a circle inside that
+    var innerGraphicContainer = svg.append('g');
+
+    innerGraphicContainer.append('circle')
+        .attr('cx', '250')
+        .attr('cy', '150')
+        .attr('r', '50')
+        .attr('fill', 'steelblue');
+</script>
+
+</html>

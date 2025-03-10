@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<htm>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Example 1 - Saskatoon Map</title>
+        <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+
+    <body>
+    </body>
+    <script type="text/javascript">
+        //Width and height
+        var w = 800;
+        var h = 500;
+
+        //Define map projection
+        var projection = d3.geoMercator()
+            .center([-106.67, 52.1332])
+            .translate([w / 2, h / 2])
+            .scale([50000]);
+
+        //Define path generator
+        var path = d3.geoPath()
+            .projection(projection);
+
+        //Create SVG element
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+        //Load in GeoJSON data
+        d3.json("saskatoon.json").then(function(json) {
+
+            //Bind data and create one path per GeoJSON feature
+            svg.selectAll("path")
+                .data(json.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr('fill', 'steelblue')
+                .attr('stroke', 'black')
+                .append('title')
+                .text(function(d) {
+                    return d.properties.name;
+                })
+
+        });
+    </script>
+
+    </html>
