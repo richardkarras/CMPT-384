@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example - D3 Panel </title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+
+        html,body {
+            margin:0px;
+        }
+
+        svg {
+            display: block;
+            margin: 25px auto;
+        }
+        
+        line {
+            stroke: #ccc;
+            stroke-width: 1;
+        }
+
+        .panel {
+            float:left;
+        }
+
+        #right-panel{
+            text-align: center;
+            vertical-align: top;
+            box-sizing: border-box;
+            padding: 50px;
+        }
+
+        /* style for slider */
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .slider-heading {
+            font-family: sans-serif; 
+            margin-top:40px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <div id='left-panel' class='panel'><svg></svg></div>
+    <div id='right-panel' class='panel'>
+        <h3 class='slider-heading'>Force Strength : <span id='force-value'>0.5</span></h3>
+        <div class="slidecontainer">
+            <input type="range" min="0" max="1" value="0.5" step='any' class="slider" id="slider-input">
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    //Width and height
+    var w = 700;
+    var h = 400;
+
+    var typeOfLayout = 'node';
+
+    var bodyWidth = +d3.select("body").node().getBoundingClientRect().width;
+    var rightPanelWidth = bodyWidth - (w);
+
+    // For very small screens the control panel width would be very small and so we cap it at 500 pixels
+    d3.select('#right-panel').style('width', Math.max(rightPanelWidth, 500) + "px");
+
+    //Original data
+    var dataset = {
+        nodes: [{
+            name: "Dunder"
+        }, {
+            name: "Mifflin"
+        }, {
+            name: "Stanley"
+        }, {
+            name: "Toby"
+        }, {
+            name: "Phyllis"
+        }, {
+            name: "Creed"
+        }, {
+            name: "Pamela"
+        }, {
+            name: "Erin"
+        }, {
+            name: "Gabe"
+        }, {
+            name: "Andrew"
+        },
+        {
+            name: "Michael"
+        }, {
+            name: "Angela"
+        }, {
+            name: "Kevin"
+        },
+        {
+            name: "Oscar"
+        }, {
+            name: "Dwight"
+        }, {
+            name: "Jim"
+        }],
+        edges: [{
+            source: 0,
+            target: 1
+        }, {
+            source: 0,
+            target: 2
+        }, {
+            source: 0,
+            target: 3
+        }, {
+            source: 0,
+            target: 4
+        }, {
+            source: 1,
+            target: 5
+        }, {
+            source: 2,
+            target: 5
+        }, {
+            source: 2,
+            target: 5
+        }, {
+            source: 3,
+            target: 4
+        }, {
+            source: 5,
+            target: 8
+        }, {
+            source: 5,
+            target: 9
+        }, {
+            source: 6,
+            target: 7
+        }, {
+            source: 7,
+            target: 8
+        }, {
+            source: 8,
+            target: 10
+        },
+
+        {
+            source: 13,
+            target: 2
+        }, {
+            source: 13,
+            target: 12
+        }, {
+            source: 15,
+            target: 6
+        }, {
+            source: 11,
+            target: 14
+        }, {
+            source: 11,
+            target: 10
+        }, {
+            source: 5,
+            target: 15
+        },
+
+        {
+            source: 13,
+            target: 14
+        }, {
+            source: 3,
+            target: 10
+        }, {
+            source: 5,
+            target: 10
+        }, {
+            source: 12,
+            target: 13
+        }, {
+            source: 11,
+            target: 12
+        }, {
+            source: 14,
+            target: 15
+        }
+        ]
+    };
+
+    //Initialize a simple force layout, using the nodes and edges in dataset
+    var simulation = d3.forceSimulation(dataset.nodes)
+        .force("charge", d3.forceManyBody())
+        .force("link", d3.forceLink(dataset.edges).strength(0.5))
+        .force("center", d3.forceCenter().x(w / 2).y(h / 2));
+
+    var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+    //Modify SVG element
+    var svg = d3.select("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    //Create edges as lines
+    var edges = svg.selectAll("line")
+        .data(dataset.edges)
+        .enter()
+        .append("line");
+
+    //Create nodes as circles
+    var nodes = svg.selectAll("circle")
+        .data(dataset.nodes)
+        .enter()
+        .append("circle")
+        .attr("r", 10)
+        .style("fill", function (d, i) {
+            return colors(i);
+        });
+
+    //Add a simple tooltip
+    nodes.append("title")
+        .text(function (d) {
+            return d.name;
+        });
+
+    //Every time the simulation "ticks", this will be called
+    simulation.on("tick", function () {
+
+        edges.attr("x1", function (d) {
+            return d.source.x;
+        })
+            .attr("y1", function (d) {
+                return d.source.y;
+            })
+            .attr("x2", function (d) {
+                return d.target.x;
+            })
+            .attr("y2", function (d) {
+                return d.target.y;
+            });
+
+        nodes.attr("cx", function (d) {
+            return d.x;
+        })
+            .attr("cy", function (d) {
+                return d.y;
+            });
+
+    });
+
+    d3.select('#slider-input')
+        .on("input", sliderChange);
+
+    // Restart simulation on slider change 
+    function sliderChange() {
+        d3.select('#force-value').text(Math.round(+this.value * 100) / 100);
+        simulation.force("link").strength(+this.value);
+        simulation.alpha(1).restart();
+    }
+
+</script>
+
+</html>

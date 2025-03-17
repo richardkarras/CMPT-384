@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Example 1 - D3 Pie Layout </title>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        svg {
+            display: block;
+            margin: 25px auto;
+        }
+        
+        h2 {
+            text-align: center;
+            font-family: sans-serif;
+        }
+        
+        text {
+            font-family: sans-serif;
+            font-size: 15px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h2>Breakdown of Time Spent in Developing a Website </h2>
+</body>
+
+<script type="text/javascript">
+    // Global variables for width and height of the chart
+    var w = 800;
+    var h = 400;
+
+    //Create SVG element 
+    var graphicContainer = d3.select("body")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+        // we create an inner graphic container and center it to the middle of the svg
+        // because the pie is created from the center , directly creating the pie on the svg
+        // would should only a quarter of the pie chart
+        .append('g')
+        .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
+
+
+    var data = [{
+        'label': 'Designing',
+        'count': 20
+    }, {
+        'label': 'Coding',
+        'count': 40
+    }, {
+        'label': 'Testing',
+        'count': 20
+    }, {
+        'label': 'Fixing issues in IE',
+        'count': 120
+    }];
+
+    // d3.schemeCategory10 gives an array of 10 colours 
+    // we use an ordinal scale and map the labels to the colours
+    var colorScale = d3.scaleOrdinal()
+        .domain(data.map(function(d) {
+            return d.label;
+        }))
+        .range(d3.schemeCategory10.slice(0, data.length));
+
+    // This function lets us configure the layout of our pie chart 
+    var pieLayout = d3.pie()
+        .sort(null)
+        .value(function(d) {
+            return d.count;
+        });
+
+    var pieData = pieLayout(data);
+
+    // The pie should be visible completely on the screen so we take
+    // the minimum value and take half of that.
+    var radius = Math.min(w, h) / 2;
+
+    // Function to decide how our arc must look
+    var arc = d3.arc()
+        .innerRadius(radius * 0.75)
+        .outerRadius(radius);
+
+    // Convert the layout data into actual graphic elements
+    graphicContainer.selectAll('path')
+        .data(pieData)
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', function(d) {
+            return colorScale(d.data.label);
+        });
+
+
+    // Code to create Legends for our pie chart
+    // Each legend sits inside its own g element
+    // because each legend is a combination of a coloured rectangle and a text
+
+    var legendContainer = graphicContainer.selectAll('g')
+        .data(data)
+        .enter()
+        .append('g')
+        .attr('transform', function(d, i) {
+            var offset = -radius / 4;
+            var horizontalPostion = -radius / 4;
+            var verticalPosition = i * 25 + offset;
+            return "translate(" + horizontalPostion + "," + verticalPosition + ")";
+        });
+
+
+    legendContainer.append('rect')
+        .attr('width', 20)
+        .attr('height', 20)
+        .style('fill', function(d) {
+            return colorScale(d.label);
+        });
+
+    legendContainer.append('text')
+        .attr('x', 25)
+        .attr('y', 15)
+        .text(function(d) {
+            return d.label;
+        });
+</script>
+
+</html>
